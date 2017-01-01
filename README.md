@@ -1,23 +1,45 @@
-# Cassandra Sceheme
+# Cassandra Scheme
 
 
 Table of Contents
 
 * <a href="#motivations">Motivations</a>
 * <a href="#configurations">Configurations</a>
-    * <a href="#log">Log</a>
+    * <a href="#usage">Usage</a>
+    * <a href="#parameters">Parameters</a>
 * <a href="#contact">Contact</a>
 
 <a name="motivations"></a>
 ## Motivations
-Currently there is no tool that will help with the versioning of cassandra scheme. I was looking for a tool that is simular to 
+Currently there is no tool that will help with the versioning of cassandra scheme. I was looking for a tool that is similar to 
 flyway or liquidbase
+
 
 <a name="configurations"></a>
 ## Configurations
 
---cassandra.keyspace=angelsense1 --scheme.dir=/Users/chaimturkel/Workspace/AngleSense/server/angelsense.batch/src/main/resources/cassandra
+<a name="usage"></a>
+## Usage
+To use the tool you need to create a directory will all your script files (files must end in cql).
+The tool will save in a table in cassdara which scripts where already run. So all you need to do is add your new scripts to the 
+same dir, and the tool will run only the new scripts.
+In the case that you have changed a script that was already run, you will get a warning.
 
+<a name="parameters"></a>
+## Parameters
+Mandatory parameters that need to be configured:
+
+```properties
+cassandra.contactpoints = [ip]
+cassandra.keyspace = [name]
+scheme.dir = [location]
+```
+
+Optional parameters
+```properties
+cassandra.port = 9042
+cassandra.version.table = scheme_version
+```
 
 <a name="log"></a>
 ### Log
