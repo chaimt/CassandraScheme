@@ -2,7 +2,6 @@ package com.turkel.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.mapping.MappingManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +36,6 @@ public class CassandraConfig {
 
     @Bean Session session() {
         return cluster().connect(keyspace);
-    }
-
-    @Bean
-    MappingManager mappingManager(){
-        return new MappingManager(session());
     }
 
 }

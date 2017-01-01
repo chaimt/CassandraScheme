@@ -2,9 +2,8 @@ package com.turkel.cassandra.scheme;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.mapping.MappingManager;
 import com.turkel.cassandra.utils.UUIDToDate;
-import javaslang.control.Try;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * Created by chaimturkel on 1/1/17.
@@ -31,7 +28,6 @@ public class SchemeConfig {
 
     @Autowired Session session;
     @Autowired Cluster cluster;
-    @Autowired MappingManager mappingManager;
 
 
     @PostConstruct
@@ -41,33 +37,14 @@ public class SchemeConfig {
     }
 
 
-    private Try<String> readFile(String file) {
-        return Try.of(() -> {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line = null;
-                StringBuilder stringBuilder = new StringBuilder();
-                String ls = System.getProperty("line.separator");
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append(ls);
-                }
-
-                return stringBuilder.toString();
-            }
+    public void runScript(String fileName, String hash) throws IOException {
+        InputStream is = new FileInputStream(fileName);
+        byte[] buffer = new byte[is.available()];
+        IOUtils.readFully(is, buffer);
+        List<String> commands = Arrays.asList(new String(buffer, "UTF-8").split(";"));
+        commands.forEach(script -> {
+            session.execute(script);
         });
-    }
-
-    public void runScript(String fileName, String hash) {
-        readFile(fileName)
-                .onSuccess(script -> {
-                    session.execute(script);
-                    addSchemeRow(fileName, hash);
-                })
-                .onFailure(throwable -> {
-                            logger.error(throwable.getMessage());
-                            throw  new RuntimeException(throwable);
-                        }
-                );
     }
 
     public void addSchemeRow(String fileName, String hash) {

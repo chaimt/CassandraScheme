@@ -1,5 +1,7 @@
 package com.turkel.cassandra.scheme;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import javaslang.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,9 @@ public class SchemeBuilder {
 
     MessageDigest messageDigest;
 
+    @Autowired Session session;
+    @Autowired Cluster cluster;
+
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     private String bytesToHex(byte[] bytes) {
@@ -55,6 +60,7 @@ public class SchemeBuilder {
 
     @PostConstruct
     public void init() throws IOException, NoSuchAlgorithmException {
+        logger.info("************************* starting ************************************");
         messageDigest = MessageDigest.getInstance("MD5");
         File file = new File(schemeDir);
         if (!file.exists()) {
@@ -69,9 +75,15 @@ public class SchemeBuilder {
                         .onSuccess(hash -> {
                             if (data == null) {
                                 logger.info("running script " + cqlScript);
-                                schemeConfig.runScript(path.toString(), hash);
+                                try {
+                                    schemeConfig.runScript(path.toString(), hash);
+                                    schemeConfig.addSchemeRow(cqlScript, hash);
+                                } catch (IOException e) {
+                                    logger.error(String.format("file %s. Error %s",cqlScript,e.getMessage()));
+                                }
                             }
                             else{
+                                logger.info("already ran script " + cqlScript);
                                 if (!data.getHash().equals(hash)){
                                     logger.error(String.format("expected %s but found %s for %s",data.getHash(),hash,cqlScript));
                                 }
@@ -81,6 +93,9 @@ public class SchemeBuilder {
                         .onFailure(Throwable::printStackTrace);
             });
         }
-
+        logger.info("************************* finished ************************************");
+        //allow spring to shutdown
+        session.close();
+        cluster.close();
     }
 }
