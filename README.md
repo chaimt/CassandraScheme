@@ -21,9 +21,17 @@ flyway or liquidbase
 <a name="usage"></a>
 ## Usage
 To use the tool you need to create a directory will all your script files (files must end in cql).
-The tool will save in a table in cassdara which scripts where already run. So all you need to do is add your new scripts to the 
+The tool will save in a table in Cassandra which scripts where already run. So all you need to do is add your new scripts to the 
 same dir, and the tool will run only the new scripts.
 In the case that you have changed a script that was already run, you will get a warning.
+
+Since this is a spring boot application you can run the application from the command line like:
+
+```commandline
+java -jar cassandra-scheme.jar --cassandra.keyspace=myspace --scheme.dir=/mydir
+```
+
+Another option is to create a application.properties file under a config dir with all the parameters set.
 
 <a name="parameters"></a>
 ## Parameters
