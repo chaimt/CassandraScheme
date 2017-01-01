@@ -1,8 +1,8 @@
-package com.turkel.cassandra.scheme;
+package com.turel.cassandra.scheme;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.turkel.cassandra.utils.UUIDToDate;
+import com.turel.cassandra.utils.UUIDToDate;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

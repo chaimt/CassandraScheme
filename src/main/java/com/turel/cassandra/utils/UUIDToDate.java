@@ -1,4 +1,4 @@
-package com.turkel.cassandra.utils;
+package com.turel.cassandra.utils;
 
 import java.util.Date;
 import java.util.UUID;

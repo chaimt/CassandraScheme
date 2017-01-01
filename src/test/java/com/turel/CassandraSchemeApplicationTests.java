@@ -1,4 +1,4 @@
-package com.turkel;
+package com.turel;
 
 import org.junit.Ignore;
 import org.junit.Test;

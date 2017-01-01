@@ -1,4 +1,4 @@
-package com.turkel.cassandra.scheme;
+package com.turel.cassandra.scheme;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
