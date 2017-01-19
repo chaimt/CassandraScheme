@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * Created by chaimturkel on 1/1/17.
@@ -24,9 +25,22 @@ public class CassandraConfig {
     @Value("${cassandra.keyspace}")
     private String keyspace;
 
+    @Value("${cassandra.user}")
+    private String user;
+
+    @Value("${cassandra.password}")
+    private String password;
+
+
     @Bean Cluster cluster() {
         logger.info(String.format("Cassandra: %s, %s", contactpoints, port));
-        return Cluster.builder().addContactPoint(contactpoints).withPort(port).build();
+        final Cluster.Builder builder = Cluster.builder().withPort(port);
+        for (String host : contactpoints.split(",")){
+            builder.addContactPoint(host);
+        }
+        if (!StringUtils.isEmpty(user))
+            builder.withCredentials(user,password);
+        return builder.build();
     }
 
     private void createKeyspaceIfMissing(){
